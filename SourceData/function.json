@@ -1,0 +1,19 @@
+{
+  "bindings": [
+    {
+      "name": "myBlob",
+      "type": "blobTrigger",
+      "direction": "in",
+      "path": "%SourceDataContainer%/zipped/{name}",
+      "connection": "SourceDataConnection"
+    },
+    {
+      "type": "queue",
+      "name": "outputQueueItem",
+      "queueName": "%TriggerAnalyticsQueue%",
+      "connection": "SourceDataConnection",
+      "direction": "out"
+    }
+  ],
+  "disabled": false
+}
