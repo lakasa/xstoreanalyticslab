@@ -10,7 +10,15 @@
             "type": "string"
         },
         "dataBricksRegion": {
-            "defaultValue": "eastus2",
+            "defaultValue": "eastus2euap",
+            "type": "string"
+        },
+        "dataBricksResourceGroup": {
+            "defaultValue": "xstoreill",
+            "type": "string"
+        },
+        "dataBricksWorkspace": {
+            "defaultValue": "xstoreill",
             "type": "string"
         },
         "dataBricksUsername": {
@@ -35,6 +43,16 @@
         "roleAssignment": "[guid(resourceGroup().id)]"
     },
     "resources": [
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2017-05-01",
+            "name": "[variables('roleAssignment')]",
+            "properties": {
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+                "principalId": "[parameters('userPrincipalId')]",
+                "scope": "[resourceId(parameters('dataBricksResourceGroup'), 'Microsoft.Databricks/workspaces', parameters('dataBricksWorkspace'))]"
+            }
+        },
         {
             "type": "Microsoft.Authorization/roleAssignments",
             "apiVersion": "2017-05-01",
