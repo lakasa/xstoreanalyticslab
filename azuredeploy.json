@@ -1,0 +1,347 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "baseName": {
+            "defaultValue": "xstoreill",
+            "type": "string"
+        },
+        "userPrincipalId": {
+            "type": "string"
+        },
+        "dataBricksRegion": {
+            "defaultValue": "eastus2",
+            "type": "string"
+        },
+        "dataBricksUsername": {
+            "type": "string"
+        },
+        "dataBricksToken": {
+            "type": "securestring"
+        },
+        "deploymentRepoURL": {
+            "type": "string",
+            "defaultValue": "https://github.com/jamesbak/xstoreanalyticsill.git",
+            "metadata": {
+                "description": "The URL for the GitHub repository that contains the project to deploy."
+            }
+        },
+        "deploymentBranch": {
+            "type": "string",
+            "defaultValue": "master"
+        }
+    },
+    "variables": {
+        "roleAssignment": "[guid(resourceGroup().id)]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2017-05-01",
+            "name": "[variables('roleAssignment')]",
+            "properties": {
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+                "principalId": "[parameters('userPrincipalId')]",
+                "scope": "[resourceGroup().id]"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('baseName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "name": "[parameters('baseName')]",
+            "apiVersion": "2016-09-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "name": "[parameters('baseName')]",
+                "workerTierName": null,
+                "adminSiteName": null,
+                "hostingEnvironmentProfile": null,
+                "perSiteScaling": false,
+                "reserved": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "name": "[parameters('baseName')]",
+            "apiVersion": "2016-08-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('baseName'),'.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "virtualIP": null,
+                        "thumbprint": null,
+                        "toUpdate": null,
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(parameters('baseName'),'.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "virtualIP": null,
+                        "thumbprint": null,
+                        "toUpdate": null,
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('baseName'))]",
+                "reserved": false,
+                "siteConfig": {
+                    "numberOfWorkers": 1,
+                    "defaultDocuments": [
+                        "Default.htm",
+                        "Default.html",
+                        "Default.asp",
+                        "index.htm",
+                        "index.html",
+                        "iisstart.htm",
+                        "default.aspx",
+                        "index.php"
+                    ],
+                    "netFrameworkVersion": "v4.0",
+                    "phpVersion": "5.6",
+                    "pythonVersion": "",
+                    "nodeVersion": "",
+                    "linuxFxVersion": "",
+                    "requestTracingEnabled": false,
+                    "remoteDebuggingEnabled": false,
+                    "remoteDebuggingVersion": null,
+                    "httpLoggingEnabled": false,
+                    "logsDirectorySizeLimit": 35,
+                    "detailedErrorLoggingEnabled": false,
+                    "publishingUsername": "$setrbacblob",
+                    "publishingPassword": null,
+                    "appSettings": [
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=', parameters('baseName'), ';AccountKey=', listKeys(parameters('baseName'), '2017-06-01').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[parameters('baseName')]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=', parameters('baseName'), ';AccountKey=', listKeys(parameters('baseName'), '2017-06-01').key1)]"
+                        },
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=', parameters('baseName'), ';AccountKey=', listKeys(parameters('baseName'), '2017-06-01').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_SLOT_NAME",
+                            "value": "Production"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~1"
+                        },
+                        {
+                            "name": "DataConnection",
+                            "value": "[concat('DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=', parameters('baseName'), ';AccountKey=', listKeys(parameters('baseName'), '2017-06-01').key1)]"
+                        },
+                        {
+                            "name": "AnalyticsOutputContainer",
+                            "value": "outputdata"
+                        },
+                        {
+                            "name": "AnalyticsOutputPrefix",
+                            "value": "data/"
+                        },
+                        {
+                            "name": "AnalyticsJobDone",
+                            "value": "done"
+                        },
+                        {
+                            "name": "ArchivalDataContainer",
+                            "value": "archivaldata"
+                        },
+                        {
+                            "name": "TriggerAnalyticsQueue",
+                            "value": "trigger-analytics"
+                        },
+                        {
+                            "name": "SourceDataContainer",
+                            "value": "sourcedata"
+                        },
+                        {
+                            "name": "UnzipLocation",
+                            "value": "unzipped/"
+                        },
+                        {
+                            "name": "DataBricksRegion",
+                            "value": "[parameters('dataBricksRegion')]"
+                        },
+                        {
+                            "name": "DataBricksUsername",
+                            "value": "[parameters('dataBricksUser')]"
+                        },
+                        {
+                            "name": "DataBricksToken",
+                            "value": "[parameters('dataBricksToken')]"
+                        },
+                        {
+                            "name": "DataBricksNotebook",
+                            "value": "RunLogAnalyticsNotebook"
+                        },
+                        {
+                            "name": "PYTHONPATH",
+                            "value": ".\\modules"
+                        }
+                    ],
+                    "metadata": null,
+                    "connectionStrings": null,
+                    "machineKey": null,
+                    "handlerMappings": null,
+                    "documentRoot": null,
+                    "scmType": "None",
+                    "use32BitWorkerProcess": true,
+                    "webSocketsEnabled": false,
+                    "alwaysOn": false,
+                    "javaVersion": null,
+                    "javaContainer": null,
+                    "javaContainerVersion": null,
+                    "appCommandLine": "",
+                    "managedPipelineMode": "Integrated",
+                    "virtualApplications": [
+                        {
+                            "virtualPath": "/",
+                            "physicalPath": "site\\wwwroot",
+                            "preloadEnabled": false,
+                            "virtualDirectories": null
+                        }
+                    ],
+                    "winAuthAdminState": 0,
+                    "winAuthTenantState": 0,
+                    "customAppPoolIdentityAdminState": false,
+                    "customAppPoolIdentityTenantState": false,
+                    "runtimeADUser": null,
+                    "runtimeADUserPassword": null,
+                    "loadBalancing": "LeastRequests",
+                    "routingRules": [],
+                    "experiments": {
+                        "rampUpRules": []
+                    },
+                    "limits": null,
+                    "autoHealEnabled": false,
+                    "autoHealRules": null,
+                    "tracingOptions": null,
+                    "vnetName": "",
+                    "siteAuthEnabled": false,
+                    "siteAuthSettings": {
+                        "enabled": null,
+                        "unauthenticatedClientAction": null,
+                        "tokenStoreEnabled": null,
+                        "allowedExternalRedirectUrls": null,
+                        "defaultProvider": null,
+                        "clientId": null,
+                        "clientSecret": null,
+                        "issuer": null,
+                        "allowedAudiences": null,
+                        "additionalLoginParams": null,
+                        "isAadAutoProvisioned": false,
+                        "googleClientId": null,
+                        "googleClientSecret": null,
+                        "googleOAuthScopes": null,
+                        "facebookAppId": null,
+                        "facebookAppSecret": null,
+                        "facebookOAuthScopes": null,
+                        "twitterConsumerKey": null,
+                        "twitterConsumerSecret": null,
+                        "microsoftAccountClientId": null,
+                        "microsoftAccountClientSecret": null,
+                        "microsoftAccountOAuthScopes": null
+                    },
+                    "cors": {
+                        "allowedOrigins": [
+                            "https://functions.azure.com",
+                            "https://functions-staging.azure.com",
+                            "https://functions-next.azure.com"
+                        ]
+                    },
+                    "push": null,
+                    "apiDefinition": null,
+                    "autoSwapSlotName": null,
+                    "localMySqlEnabled": false,
+                    "managedServiceIdentityId": null,
+                    "ipSecurityRestrictions": null
+                },
+                "scmSiteAlsoStopped": false,
+                "hostingEnvironmentProfile": null,
+                "clientAffinityEnabled": false,
+                "clientCertEnabled": false,
+                "hostNamesDisabled": false,
+                "containerSize": 1536,
+                "dailyMemoryTimeQuota": 0,
+                "cloningInfo": null
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('baseName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('baseName'))]"
+            ],
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "web",
+                    "type": "sourcecontrols",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('baseName'))]"
+                    ],
+                    "properties": {
+                        "RepoUrl": "[parameters('deploymentRepoURL')]",
+                        "branch": "[parameters('deploymentBranch')]",
+                        "IsManualIntegration": true
+                    }
+                }
+            ]
+        }
+    ]
+}

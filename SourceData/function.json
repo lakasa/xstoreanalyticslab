@@ -5,13 +5,13 @@
       "type": "blobTrigger",
       "direction": "in",
       "path": "%SourceDataContainer%/zipped/{name}",
-      "connection": "SourceDataConnection"
+      "connection": "DataConnection"
     },
     {
       "type": "queue",
       "name": "outputQueueItem",
       "queueName": "%TriggerAnalyticsQueue%",
-      "connection": "SourceDataConnection",
+      "connection": "DataConnection",
       "direction": "out"
     }
   ],

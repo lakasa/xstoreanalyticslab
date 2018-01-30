@@ -2,7 +2,7 @@ var tar = require('tar');
 var azure_storage = require('azure-storage');
 
 module.exports = function (context) {
-    var blobService = azure_storage.createBlobService(process.env.SourceDataConnection);
+    var blobService = azure_storage.createBlobService(process.env.DataConnection);
     blobService.createReadStream(process.env.SourceDataContainer, `zipped/${context.bindingData.name}`)
         .pipe(tar.x())
         .on('entry', (entry) => {
