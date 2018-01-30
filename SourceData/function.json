@@ -5,7 +5,8 @@
       "type": "blobTrigger",
       "direction": "in",
       "path": "%SourceDataContainer%/zipped/{name}",
-      "connection": "DataConnection"
+      "connection": "DataConnection",
+      "dataType": "binary"
     },
     {
       "type": "queue",
