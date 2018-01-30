@@ -15,7 +15,7 @@ run_job_payload = {\
     "source_container": os.environ['SourceDataContainer'], \
     "source_prefix": os.environ['UnzipLocation'] + 'logs/', \
     "output_container": os.environ['AnalyticsOutputContainer'], \
-    "output_prefix": os.environ['AnalyticsOutputPrefix'], 
+    "output_prefix": os.environ['AnalyticsOutputPrefix'], \
     "done_file_path": os.environ['AnalyticsJobDone']}}
 
 run_job_response = requests.post('https://{0}.azuredatabricks.net/api/2.0/jobs/run-now'.format(os.environ['DataBricksRegion']), auth=creds, data=json.dumps(run_job_payload)).json()
