@@ -37,13 +37,6 @@
         "deploymentBranch": {
             "type": "string",
             "defaultValue": "master"
-        },
-        "clientId": {
-            "type": "string",
-            "defaultValue": "e87d32d4-69b7-4ecd-826d-2ea9c63a9c7e"
-        },
-        "clientSecret": {
-            "type": "string"
         }
     },
     "variables": {
@@ -282,11 +275,11 @@
                         },
                         {
                             "name": "clientID",
-                            "value": "[parameters('clientId')]"
+                            "value": ""
                         },
                         {
                             "name": "clientSecret",
-                            "value": "[parameters('clientSecret')]"
+                            "value": ""
                         },
                         {
                             "name": "ResourceGroup",
@@ -294,7 +287,7 @@
                         },
                         {
                             "name": "principalId",
-                            "value": "[parameters('userPrincipalId')]"
+                            "value": ""
                         },
                         {
                             "name": "TenantId",
