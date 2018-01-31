@@ -37,6 +37,13 @@
         "deploymentBranch": {
             "type": "string",
             "defaultValue": "master"
+        },
+        "clientId": {
+            "type": "string",
+            "defaultValue": "e87d32d4-69b7-4ecd-826d-2ea9c63a9c7e"
+        },
+        "clientSecret": {
+            "type": "string"
         }
     },
     "variables": {
@@ -256,6 +263,50 @@
                         {
                             "name": "PYTHONPATH",
                             "value": ".\\modules"
+                        },
+                        {
+                            "name": "ResourceId",
+                            "value": "https://management.azure.com/"
+                        },
+                        {
+                            "name": "SubscriptionId",
+                            "value": "[subscription().subscriptionId]"
+                        },
+                        {
+                            "name": "RoleDefinitionId",
+                            "value": "acdd72a7-3385-48ef-bd42-f606fba81ae7"
+                        },
+                        {
+                            "name": "AuthEndpoint",
+                            "value": "https://login.microsoftonline.com/{0}"
+                        },
+                        {
+                            "name": "clientID",
+                            "value": "[parameters('clientId')]"
+                        },
+                        {
+                            "name": "clientSecret",
+                            "value": "[parameters('clientSecret')]"
+                        },
+                        {
+                            "name": "ResourceGroup",
+                            "value": "[resourceGroup().name]"
+                        },
+                        {
+                            "name": "principalId",
+                            "value": "[parameters('userPrincipalId')]"
+                        },
+                        {
+                            "name": "TenantId",
+                            "value": "[subscription().tenantId]"
+                        },
+                        {
+                            "name": "Resource",
+                            "value": "[parameters('baseName')]"
+                        },
+                        {
+                            "name": "Container",
+                            "value": "outputdata"
                         }
                     ],
                     "metadata": null,

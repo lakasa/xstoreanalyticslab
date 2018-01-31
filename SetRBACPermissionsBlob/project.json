@@ -1,0 +1,9 @@
+{
+    "frameworks": {
+      "net46":{
+        "dependencies": {
+          "Microsoft.Azure.Management.Authorization": "2.6.0-preview"
+        }
+      }
+     }
+  }
