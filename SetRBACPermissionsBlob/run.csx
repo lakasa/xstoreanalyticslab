@@ -92,7 +92,9 @@ static async Task RunAsync(TraceWriter log)
     {
         // Create a new role assignment
         RoleAssignment roleAssignment = new RoleAssignment();
-        roleAssignment.properties.roleDefinitionId = String.Format("/subscriptions/{0}/providers/Microsoft.Authorization/roleDefinitions/{1}", SubscriptionId, RoleDefinitionId);
+        //roleAssignment.properties.roleDefinitionId = String.Format("/subscriptions/{0}/providers/Microsoft.Authorization/roleDefinitions/{1}", SubscriptionId, RoleDefinitionId);
+        roleAssignment.properties.roleDefinitionId = String.Format("/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Storage/storageAccounts/{2}/providers/Microsoft.Authorization/roleDefinitions/{3}", SubscriptionId, ResourceGroup, Resource, RoleDefinitionId);
+        
         roleAssignment.properties.principalId = principalId;
 
         await SetRoleAssignment(roleAssignment, log);              
