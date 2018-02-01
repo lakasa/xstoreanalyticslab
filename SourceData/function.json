@@ -4,7 +4,6 @@
       "name": "sourceArchive",
       "type": "blobTrigger",
       "direction": "in",
-      "path": "%SourceDataContainer%/zipped/{name}",
       "connection": "DataConnection",
       "dataType": "binary"
     },
