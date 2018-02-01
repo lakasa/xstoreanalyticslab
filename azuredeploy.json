@@ -83,25 +83,6 @@
                     "keySource": "Microsoft.Storage"
                 }
             },
-            "resources": [
-                {
-                    "type": "blobServices",
-                    "name": "default",
-                    "apiVersion": "2017-10-01",
-                    "dependsOn": ["[resourceId('Microsoft.Storage/storageAccounts', parameters('baseName'))]"],
-                    "properties": {
-                        "Cors": {}
-                    },
-                    "resources": [
-                        {
-                            "type": "containers",
-                            "name": "sourcedata",
-                            "apiVersion": "2017-10-01",
-                            "dependsOn": ["default"]
-                        }
-                    ]
-                }
-            ],
             "dependsOn": []
         },
         {
@@ -403,7 +384,7 @@
                     "properties": {
                         "RepoUrl": "[parameters('deploymentRepoURL')]",
                         "branch": "[parameters('deploymentBranch')]",
-                        "IsManualIntegration": true
+                        "IsManualIntegration": false
                     }
                 }
             ]
